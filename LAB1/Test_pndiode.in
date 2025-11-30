@@ -1,0 +1,47 @@
+# (c) Silvaco Inc., 2024
+
+# Schottky Diode Forward Characteristic 
+
+# Required Modules
+#  Victory Device
+#   -2D Simulator
+
+# Example Name
+Set name=“Test_pndiode” 
+
+####### DEVICE SIMULATION #######
+GO victorydevice simflags="-P 4"
+
+#### STRUCTURE SPECIFICATION ####
+# Mesh Definition
+MESH
+
+X.MESH location=0.00 spacing=0.1
+X.MESH location=1.50 spacing=0.1
+
+Y.MESH location=0.00 spacing=0.02
+Y.MESH location=1.0 spacing=0.02
+
+REGION num=1 silicon
+
+ELECTRODE name=anode x.min=0.2 x.max=1.3 #length=2
+ELECTRODE name=cathode bottom
+
+doping n.type conc=1e16 x.min=0 x.max=1.5 y.min=0.5 y.max=1.0 uniform 
+doping p.type conc=1e17 x.min=0 x.max=1.5 y.min=0.0 y.max=0.5 uniform 
+
+output val.band con.band qfn qfp
+
+#### MATERIAL/PHYSICAL MODELS #### 
+MODEL conmob fldmob srh auger bgn 
+LOG outfile=$'name'.log
+SOLVE init
+
+method newton
+SOLVE vanode=0.05 vstep=0.05 vfinal=1 name=anode
+
+SAVE outfile=$'name'.str
+victoryvisual $'name'.log $'name'.str 
+
+QUIT
+
